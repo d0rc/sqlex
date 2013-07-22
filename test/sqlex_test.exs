@@ -37,4 +37,13 @@ defmodule SqlexTest do
   test "prepare works for lists" do
   	assert "select * from posts where id in (1,2,300)" == SQL.query "select * from posts where id in ?", [[1,2,300]]
   end
+
+  test "escaping works" do
+  	assert "select 'hel\\'o'" == SQL.query "select ?", ["hel'o"]
+  end
+
+  test "running query with args" do
+  	[row] = SQL.run "select ? as ok", [1]
+  	assert(row[:ok] == 1)
+  end
 end

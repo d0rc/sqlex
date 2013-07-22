@@ -20,8 +20,12 @@ defmodule SQL do
 		lc row inlist rows, do: Enum.zip(name_list, row)
 	end
 
+	defp escape([]), do: []
+	defp escape([?'|str]), do: [92,?'|escape(str)]
+	defp escape([c|str]), do: [c|escape(str)]
+
 	defp prep_argument(arg) when is_list(arg), do: [[?(| :erlang.binary_to_list Enum.join arg, "," ]|[?)]]
-	defp prep_argument(arg) when is_binary(arg), do: [[?'|:erlang.binary_to_list(arg)]|[?']] 
+	defp prep_argument(arg) when is_binary(arg), do: [[?'|escape(:erlang.binary_to_list(arg))]|[?']] 
 	defp prep_argument(arg) when is_integer(arg), do: :erlang.integer_to_list arg
 
 	defp in_query([], _), do: []
@@ -30,6 +34,8 @@ defmodule SQL do
 	defp in_query([s|sql], args), do: [s|in_query(sql, args)]
 
 	def query(sql, args), do: :erlang.list_to_binary List.flatten in_query sql, args
+
+	def run(sql, args), do: read query sql, args
 
 	def init_pool args_original do
 		defaults = [pool: :mp, size: 5, login: 'root', password: '', host: 'localhost', port: 3306, db: 'test']
