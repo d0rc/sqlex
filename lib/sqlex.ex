@@ -12,9 +12,9 @@ defmodule FindFile do
 			case file do
 				^target  -> {true, full_path}
 				_       -> 
-					case File.regular? full_path do
-						true  -> full_path
-						false -> inner_find(target, full_path)
+					case File.dir? full_path do
+						false  -> full_path
+						true   -> inner_find(target, full_path)
 					end
 			end
 		end)
@@ -23,9 +23,9 @@ end
 
 defmodule SQL do
 	require FindFile
-	
-	defrecord :result_packet, Record.extract(:result_packet, from: FindFile.find "emysql.hrl")
-	defrecord :field, Record.extract(:field, from: FindFile.find "emysql.hrl")
+
+	defrecord :result_packet, Record.extract(:result_packet, from: FindFile.find("emysql.hrl", ".."))
+	defrecord :field, Record.extract(:field, from: FindFile.find("emysql.hrl", ".."))
 	defp to_atom(val), do: :erlang.binary_to_atom(val, :utf8)  
 	
 
