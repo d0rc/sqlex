@@ -1,31 +1,6 @@
-defmodule FindFile do
-	def find(target, root // ".") do
-		case inner_find(target, root) |> List.flatten |> Enum.filter(fn({true,_}) -> true;(_) -> false end) do
-			[{true, path}|_] -> path
-			_				 -> nil
-		end
-	end
-	defp inner_find(target, root // ".") do
-		{:ok, list} = File.ls root
-		list |> Enum.map(fn(file) ->
-			full_path = "#{root}/#{file}"
-			case file do
-				^target  -> {true, full_path}
-				_       -> 
-					case File.dir? full_path do
-						false  -> full_path
-						true   -> inner_find(target, full_path)
-					end
-			end
-		end)
-	end
-end
-
 defmodule SQL do
-	require FindFile
-
-	defrecord :result_packet, Record.extract(:result_packet, from: FindFile.find("emysql.hrl", ".."))
-	defrecord :field, Record.extract(:field, from: FindFile.find("emysql.hrl", ".."))
+	defrecord :result_packet, Record.extract(:result_packet, from: Path.join([:code.lib_dir(:emysql), "include", "emysql.hrl"]))
+	defrecord :field, Record.extract(:field, from: Path.join([:code.lib_dir(:emysql), "include", "emysql.hrl"]))
 	defp to_atom(val), do: :erlang.binary_to_atom(val, :utf8)  
 	
 
