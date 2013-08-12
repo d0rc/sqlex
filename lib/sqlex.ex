@@ -1,6 +1,6 @@
 defmodule SQL do
-	defrecord :result_packet, Record.extract(:result_packet, from: Path.join([:code.lib_dir(:emysql), "include", "emysql.hrl"]))
-	defrecord :field, Record.extract(:field, from: Path.join([:code.lib_dir(:emysql), "include", "emysql.hrl"]))
+	defrecord :result_packet, Record.extract(:result_packet, from_lib: "emysql/include/emysql.hrl")
+	defrecord :field, Record.extract(:field, from_lib: "emysql/include/emysql.hrl")
 	defp to_atom(val), do: :erlang.binary_to_atom(val, :utf8)  
 	
 
